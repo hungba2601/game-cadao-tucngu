@@ -27,7 +27,9 @@ const $ = (id) => document.getElementById(id);
 
 const dom = {
     btnSettings: $('btn-settings'),
+    btnInstructions: $('btn-instructions'),
     btnCloseSettings: $('btn-close-settings'),
+    btnCloseInstructions: $('btn-close-instructions'),
     btnSaveSettings: $('btn-save-settings'),
     btnStart: $('btn-start'),
     btnHint: $('btn-hint'),
@@ -37,6 +39,8 @@ const dom = {
     btnRetry: $('btn-retry'),
     btnOpenSettings: $('btn-open-settings'),
     modalSettings: $('modal-settings'),
+    modalInstructions: $('modal-instructions'),
+    btnOkInstructions: $('btn-ok-instructions'),
     apiKeyInput: $('input-api-key'),
     timeLimitInput: $('input-time-limit'),
     customDataInput: $('input-custom-data'),
@@ -101,6 +105,17 @@ function init() {
 
     dom.btnSettings.addEventListener('click', () => dom.modalSettings.classList.remove('hidden'));
     dom.btnCloseSettings.addEventListener('click', () => dom.modalSettings.classList.add('hidden'));
+    
+    if (dom.btnInstructions) {
+        dom.btnInstructions.addEventListener('click', () => dom.modalInstructions.classList.remove('hidden'));
+    }
+    if (dom.btnCloseInstructions) {
+        dom.btnCloseInstructions.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
+    }
+    if (dom.btnOkInstructions) {
+        dom.btnOkInstructions.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
+    }
+
     dom.btnSaveSettings.addEventListener('click', saveSettings);
     dom.btnHint.addEventListener('click', () => dom.hintBox.classList.toggle('hidden'));
     dom.btnSubmit.addEventListener('click', submitAnswer);
@@ -110,6 +125,9 @@ function init() {
     dom.btnOpenSettings.addEventListener('click', () => { showScreen('welcome'); openSettings(); });
     dom.answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitAnswer(); });
     dom.modalSettings.addEventListener('click', (e) => { if (e.target === dom.modalSettings) closeModal(); });
+    if (dom.modalInstructions) {
+        dom.modalInstructions.addEventListener('click', (e) => { if (e.target === dom.modalInstructions) dom.modalInstructions.classList.add('hidden'); });
+    }
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     showScreen('welcome');
 }
@@ -206,6 +224,9 @@ function openSettings() {
 
 function closeModal() {
     dom.modalSettings.classList.add('hidden');
+    if (dom.modalInstructions) {
+        dom.modalInstructions.classList.add('hidden');
+    }
 }
 
 // ---- Screen Management ----

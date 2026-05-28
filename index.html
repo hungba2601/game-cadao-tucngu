@@ -14,6 +14,9 @@
     <!-- Audio Button -->
     <button id="btn-audio" class="settings-btn" style="right: 80px;" title="Bật/Tắt Âm thanh" onclick="toggleAudio()">🔇</button>
 
+    <!-- Instructions Button -->
+    <button id="btn-instructions" class="settings-btn" style="right: 140px;" title="Hướng dẫn sử dụng">📖</button>
+
     <!-- Settings Button -->
     <button id="btn-settings" class="settings-btn" title="Cài đặt API">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -76,6 +79,30 @@
 
             <div class="modal-footer">
                 <button id="btn-save-settings" class="btn btn-gold">💾 Lưu cài đặt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="modal-instructions" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>📖 Hướng dẫn sử dụng</h2>
+                <button id="btn-close-instructions" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="line-height: 1.6;">
+                <p><strong>Chào mừng bạn đến với trò chơi Nhìn Hình Đoán Ca Dao Tục Ngữ!</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Mục tiêu:</strong> Nhìn bức tranh do AI vẽ và đoán câu ca dao, tục ngữ tương ứng.</li>
+                    <li><strong>Thời gian:</strong> Bạn có 60 giây (mặc định) cho mỗi câu. Có thể chỉnh trong Cài đặt.</li>
+                    <li><strong>Gợi ý:</strong> Nhấn nút "💡 Gợi ý" nếu bạn thấy quá khó.</li>
+                    <li><strong>API Key:</strong> Cần cung cấp <strong>Gemini API Key</strong> hợp lệ trong phần Cài đặt (⚙️) để AI có thể vẽ hình ảnh minh họa cho câu ca dao.</li>
+                    <li><strong>Thêm Dữ Liệu:</strong> Bạn có thể đóng góp và mở rộng ngân hàng câu hỏi bằng cách thêm ca dao, tục ngữ mới tại tab "Kho Dữ Liệu" trong phần Cài đặt.</li>
+                </ul>
+                <p style="margin-top: 10px; color: var(--gold-light); font-weight: 600;">Chúc bạn có những giây phút trải nghiệm văn hóa Việt thú vị!</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-ok-instructions" class="btn btn-gold">Đã hiểu</button>
             </div>
         </div>
     </div>
