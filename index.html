@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhìn Hình Đoán Ca Dao Tục Ngữ Việt Nam</title>
+    <meta name="description" content="Trò chơi nhìn hình ảnh đoán câu ca dao tục ngữ Việt Nam - sử dụng AI Gemini để tạo hình ảnh sáng tạo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Audio Button -->
+    <button id="btn-audio" class="settings-btn" style="right: 80px;" title="Bật/Tắt Âm thanh" onclick="toggleAudio()">🔇</button>
+
+    <!-- Settings Button -->
+    <button id="btn-settings" class="settings-btn" title="Cài đặt API">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+    </button>
+
+    <!-- Score Display -->
+    <div id="score-display" class="score-display hidden">
+        <span class="score-icon">🏆</span>
+        <span id="score-text">0 / 0</span>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="modal-settings" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>⚙️ Cài đặt & Dữ liệu</h2>
+                <button id="btn-close-settings" class="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="tab-settings-api">Cấu hình API</button>
+                <button class="modal-tab" data-tab="tab-settings-data">Kho Dữ Liệu</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tab API -->
+                <div id="tab-settings-api" class="tab-content active">
+                    <div class="form-group">
+                        <label for="input-api-key">🔑 Gemini API Key</label>
+                        <input type="password" id="input-api-key" placeholder="Nhập API Key của bạn..." autocomplete="off">
+                        <p class="form-hint">Lấy API Key tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-model">🤖 Model</label>
+                        <select id="input-model" disabled>
+                            <option value="gemini-3-flash-preview" selected>Gemini 3 Flash Preview (Mặc định)</option>
+                        </select>
+                        <p class="form-hint">Model đã được thiết lập sẵn tốt nhất.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-time-limit">⏳ Thời gian mỗi câu (giây)</label>
+                        <input type="number" id="input-time-limit" min="10" max="300" value="60">
+                        <p class="form-hint">Nhập thời gian đếm ngược (10 - 300 giây)</p>
+                    </div>
+                </div>
+
+                <!-- Tab Data -->
+                <div id="tab-settings-data" class="tab-content">
+
+                    <div class="form-group">
+                        <label for="input-custom-data">📚 Thêm Ca dao / Tục ngữ mới</label>
+                        <textarea id="input-custom-data" rows="4" placeholder="Mỗi câu một dòng..."></textarea>
+                    </div>
+                    <button id="btn-push-data" class="btn btn-start" style="width:100%; margin-top: 5px;">Thêm vào Kho dữ liệu</button>
+                    <p id="push-data-status" class="form-hint" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btn-save-settings" class="btn btn-gold">💾 Lưu cài đặt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Welcome -->
+    <div id="screen-welcome" class="screen active">
+        <div class="welcome-container">
+            <div class="welcome-decoration">
+                <div class="lantern lantern-left"></div>
+                <div class="lantern lantern-right"></div>
+            </div>
+            <h1 class="welcome-title">
+                <span class="title-line title-small">Nhìn Hình Đoán</span>
+                <span class="title-line title-big">Ca Dao<br>Tục Ngữ</span>
+                <span class="title-line title-accent">Việt Nam</span>
+            </h1>
+            <p class="welcome-subtitle">Thử tài hiểu biết văn hóa Việt qua những hình ảnh sáng tạo từ AI</p>
+            <button id="btn-start" class="btn btn-start">
+                <span class="btn-text">Bắt Đầu Chơi</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </div>
+        <div class="welcome-footer">
+            <p>Powered by <strong>Gemini AI</strong> · Nhấn ⚙️ để cài đặt API Key</p>
+        </div>
+    </div>
+
+    <!-- Screen: Loading -->
+    <div id="screen-loading" class="screen">
+        <div class="loading-container">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h2 class="loading-text">Đang tạo câu hỏi...</h2>
+            <p class="loading-hint">AI đang vẽ hình minh họa cho câu ca dao tục ngữ</p>
+        </div>
+    </div>
+
+    <!-- Screen: Game -->
+    <div id="screen-game" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <span class="round-badge" id="round-badge">Câu 1</span>
+                <span class="timer-badge" id="timer-badge">⏳ 60s</span>
+                <button id="btn-hint" class="btn btn-hint" title="Xem gợi ý">💡 Gợi ý</button>
+            </div>
+            <div class="image-frame">
+                <div class="image-wrapper">
+                    <img id="game-image" src="" alt="Hình minh họa ca dao tục ngữ" style="display:none">
+                    <div id="scene-card" class="scene-card"></div>
+                </div>
+            </div>
+            <div id="hint-box" class="hint-box hidden">
+                <div class="hint-mask">
+                    <div class="hint-mask-label">Ô CHỮ GỢI Ý</div>
+                    <div id="hint-masked-text" class="hint-mask-text"></div>
+                </div>
+            </div>
+            <div class="answer-section">
+                <div class="input-group">
+                    <input type="text" id="answer-input" placeholder="Nhập câu ca dao / tục ngữ..." autocomplete="off">
+                    <button id="btn-submit" class="btn btn-submit">Trả lời</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Correct -->
+    <div id="screen-correct" class="screen">
+        <canvas id="confetti-canvas"></canvas>
+        <div class="result-container result-correct">
+            <div class="result-icon-wrap">
+                <div class="result-icon">🎉</div>
+            </div>
+            <h2 class="result-title correct-title">Chính Xác!</h2>
+            <p class="result-subtitle">Bạn thật giỏi! 🌟</p>
+            <h3 id="correct-score" class="result-score" style="color: var(--gold); font-size: 1.2rem; margin: 10px 0;"></h3>
+            <div class="result-answer-box">
+                <span class="result-label">Đáp án:</span>
+                <p id="correct-answer-text" class="result-answer"></p>
+            </div>
+            <div class="result-actions">
+                <button id="btn-next-correct" class="btn btn-gold btn-large">Câu tiếp theo →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Wrong -->
+    <div id="screen-wrong" class="screen">
+        <div class="result-container result-wrong">
+            <div class="result-icon-wrap">
+                <div class="result-icon shake">😢</div>
+            </div>
+            <h2 class="result-title wrong-title">Sai Rồi!</h2>
+            <p class="result-subtitle" id="wrong-explanation">Đừng nản, thử lại nhé!</p>
+            <h3 id="wrong-score" class="result-score" style="color: var(--gold); font-size: 1.2rem; margin: 10px 0;"></h3>
+            <div class="result-answer-box">
+                <span class="result-label">Đáp án đúng là:</span>
+                <p id="wrong-answer-text" class="result-answer"></p>
+            </div>
+            <div class="result-actions">
+                <button id="btn-next-wrong" class="btn btn-start btn-large">Câu tiếp theo →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen: Error -->
+    <div id="screen-error" class="screen">
+        <div class="result-container result-error">
+            <div class="result-icon-wrap">
+                <div class="result-icon">⚠️</div>
+            </div>
+            <h2 class="result-title">Có lỗi xảy ra</h2>
+            <p id="error-message" class="result-subtitle"></p>
+            <div class="result-actions">
+                <button id="btn-retry" class="btn btn-start btn-large">🔄 Thử lại</button>
+                <button id="btn-open-settings" class="btn btn-hint">⚙️ Cài đặt</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="audio.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
