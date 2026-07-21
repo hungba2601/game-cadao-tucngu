@@ -11,7 +11,7 @@ const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyKpyW_p8a
 const state = {
     apiKey: '',
     model: 'gemini-3-flash-preview',
-    timeLimit: 60,
+    timeLimit: 30,
     sheetUrl: GOOGLE_SHEET_API_URL,
     fetchedProverbs: [],
     combinedProverbs: [...PROVERBS_DATA],
@@ -42,6 +42,7 @@ const dom = {
     modalInstructions: $('modal-instructions'),
     btnOkInstructions: $('btn-ok-instructions'),
     apiKeyInput: $('input-api-key'),
+    modelInput: $('input-model'),
     timeLimitInput: $('input-time-limit'),
     customDataInput: $('input-custom-data'),
     btnPushData: $('btn-push-data'),
@@ -62,15 +63,18 @@ const dom = {
     wrongScore: $('wrong-score'),
     errorMessage: $('error-message'),
     confettiCanvas: $('confetti-canvas'),
+    screenWelcome: $('screen-welcome'),
 };
 
 // ---- Init ----
 function init() {
     // Load config from localStorage
     state.apiKey = localStorage.getItem('gemini_api_key') || '';
-    state.timeLimit = parseInt(localStorage.getItem('gemini_time_limit')) || 60;
+    state.model = localStorage.getItem('gemini_model') || 'gemini-3-flash-preview';
+    state.timeLimit = parseInt(localStorage.getItem('gemini_time_limit')) || 30;
     
     dom.apiKeyInput.value = state.apiKey;
+    if (dom.modelInput) dom.modelInput.value = state.model;
     dom.timeLimitInput.value = state.timeLimit;
 
     if (state.sheetUrl) {
@@ -103,7 +107,7 @@ function init() {
         dom.btnPushData.addEventListener('click', pushData);
     }
 
-    dom.btnSettings.addEventListener('click', () => dom.modalSettings.classList.remove('hidden'));
+    dom.btnSettings.addEventListener('click', openSettings);
     dom.btnCloseSettings.addEventListener('click', () => dom.modalSettings.classList.add('hidden'));
     
     if (dom.btnInstructions) {
@@ -135,11 +139,17 @@ function init() {
 // ---- Settings ----
 function saveSettings() {
     const key = dom.apiKeyInput.value.trim();
+    const model = dom.modelInput ? dom.modelInput.value : 'gemini-3-flash-preview';
     const time = parseInt(dom.timeLimitInput.value);
 
     if (key) {
         localStorage.setItem('gemini_api_key', key);
         state.apiKey = key;
+    }
+    
+    if (model) {
+        localStorage.setItem('gemini_model', model);
+        state.model = model;
     }
     
     if (time >= 10 && time <= 300) {
@@ -148,8 +158,10 @@ function saveSettings() {
     }
 
     dom.modalSettings.classList.add('hidden');
+    
     // Start game if on welcome screen and key is provided
-    if (!dom.screenWelcome.classList.contains('hidden') && state.apiKey) {
+    const welcomeScreen = $('screen-welcome');
+    if (welcomeScreen && welcomeScreen.classList.contains('active') && state.apiKey) {
         startRound();
     }
 }
@@ -218,6 +230,7 @@ async function pushData() {
 
 function openSettings() {
     dom.apiKeyInput.value = state.apiKey;
+    if (dom.modelInput) dom.modelInput.value = state.model;
     dom.timeLimitInput.value = state.timeLimit;
     dom.modalSettings.classList.remove('hidden');
 }
@@ -328,21 +341,17 @@ async function startRound() {
     const prompt = `Bạn là họa sĩ minh họa cho trò chơi "Nhìn hình đoán ca dao tục ngữ Việt Nam".
 
 NHIỆM VỤ:
-Vẽ 1 bức tranh SVG minh họa SINH ĐỘNG cho câu ca dao/tục ngữ sau:
+Vẽ 1 bức tranh SVG TỐI GIẢN, XỬ LÝ NHANH minh họa cho câu ca dao/tục ngữ sau:
 "${selectedProverb}"
 
-QUY TẮC VẼ SVG (RẤT QUAN TRỌNG):
+QUY TẮC VẼ SVG (QUAN TRỌNG ĐỂ XỬ LÝ NHANH):
 - viewBox="0 0 500 350"
-- PHẢI có nền gradient đẹp (bầu trời, đồng quê, hoặc cảnh phù hợp)
-- VẼ NHÂN VẬT bằng: circle cho đầu, ellipse/rect cho thân, line/path cho tay chân. Thêm chi tiết như nón lá, áo, tóc
-- VẼ THIÊN NHIÊN: mặt trời (circle vàng + tia sáng), mây (ellipse trắng chồng nhau), cây (rect nâu cho thân + ellipse/circle xanh cho tán), hoa, sông/suối (path cong xanh dương), núi (polygon), ruộng lúa
-- VẼ ĐỘNG VẬT nếu cần: trâu (ellipse + sừng), chim (path cong), cá (ellipse + đuôi)
-- VẼ VẬT DỤNG: nhà tranh (rect + polygon mái), thuyền, cuốc xẻng, đèn, lửa, sách
-- Dùng màu sắc TƯƠI SÁNG, đa dạng, hài hòa
-- Bức tranh phải RÕ RÀNG, dễ nhận ra nội dung
-- TUYỆT ĐỐI KHÔNG dùng thẻ <text>, <tspan> hay bất kỳ chữ viết nào trong SVG
-- KHÔNG dùng <image>, <use>, <foreignObject>
-- CHỈ dùng: svg, g, rect, circle, ellipse, line, polyline, polygon, path, defs, linearGradient, radialGradient, stop
+- VẼ TỐI GIẢN (MINIMALISM): Chỉ tập trung vào 1-2 hình ảnh biểu tượng cốt lõi nhất.
+- HÌNH KHỐI CƠ BẢN: Dùng ít thẻ SVG nhất có thể (dưới 15 thẻ). Hạn chế dùng path phức tạp.
+- MÀU SẮC PHẲNG: Dùng các mảng màu trơn (flat color), màu sáng dễ nhìn. KHÔNG cần gradient phức tạp.
+- Bức tranh PHẢI ĐƠN GIẢN nhưng người chơi vẫn có thể đoán ra ý nghĩa.
+- TUYỆT ĐỐI KHÔNG dùng thẻ <text>, <tspan> hay chữ viết trong SVG.
+- KHÔNG dùng <image>, <use>, <foreignObject>.
 
 TRẢ VỀ ĐÚNG FORMAT NÀY:
 SVG_START
@@ -350,8 +359,8 @@ SVG_START
 ...code SVG ở đây...
 </svg>
 SVG_END
-CHU_DE: [1-2 từ thể hiện chủ đề, VD: KIÊN TRÌ]
-TU_KHOA: [2 cụm từ ngắn (2-3 chữ) liên quan hình ảnh, ngăn cách bằng dấu |. Kèm 1 emoji ở đầu mỗi cụm. VD: 💧 Nước chảy | 🪨 Đá mòn]`;
+CHU_DE: [1 từ chủ đề]
+TU_KHOA: [2 cụm từ ngắn liên quan, ngăn bằng dấu |. Kèm emoji. VD: 💧 Nước | 🪨 Đá]`;
 
     try {
         const text = await callGemini(prompt);

@@ -53,14 +53,16 @@
                     </div>
                     <div class="form-group">
                         <label for="input-model">🤖 Model</label>
-                        <select id="input-model" disabled>
+                        <select id="input-model">
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                             <option value="gemini-3-flash-preview" selected>Gemini 3 Flash Preview (Mặc định)</option>
+                            <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
                         </select>
-                        <p class="form-hint">Model đã được thiết lập sẵn tốt nhất.</p>
+                        <p class="form-hint">Chọn model AI phù hợp.</p>
                     </div>
                     <div class="form-group">
                         <label for="input-time-limit">⏳ Thời gian mỗi câu (giây)</label>
-                        <input type="number" id="input-time-limit" min="10" max="300" value="60">
+                        <input type="number" id="input-time-limit" min="10" max="300" value="30">
                         <p class="form-hint">Nhập thời gian đếm ngược (10 - 300 giây)</p>
                     </div>
                 </div>
@@ -94,7 +96,7 @@
                 <p><strong>Chào mừng bạn đến với trò chơi Nhìn Hình Đoán Ca Dao Tục Ngữ!</strong></p>
                 <ul style="margin-left: 20px; margin-top: 10px;">
                     <li><strong>Mục tiêu:</strong> Nhìn bức tranh do AI vẽ và đoán câu ca dao, tục ngữ tương ứng.</li>
-                    <li><strong>Thời gian:</strong> Bạn có 60 giây (mặc định) cho mỗi câu. Có thể chỉnh trong Cài đặt.</li>
+                    <li><strong>Thời gian:</strong> Bạn có 30 giây (mặc định) cho mỗi câu. Có thể chỉnh trong Cài đặt.</li>
                     <li><strong>Gợi ý:</strong> Nhấn nút "💡 Gợi ý" nếu bạn thấy quá khó.</li>
                     <li><strong>API Key:</strong> Cần cung cấp <strong>Gemini API Key</strong> hợp lệ trong phần Cài đặt (⚙️) để AI có thể vẽ hình ảnh minh họa cho câu ca dao.</li>
                     <li><strong>Thêm Dữ Liệu:</strong> Bạn có thể đóng góp và mở rộng ngân hàng câu hỏi bằng cách thêm ca dao, tục ngữ mới tại tab "Kho Dữ Liệu" trong phần Cài đặt.</li>
@@ -148,7 +150,7 @@
         <div class="game-container">
             <div class="game-header">
                 <span class="round-badge" id="round-badge">Câu 1</span>
-                <span class="timer-badge" id="timer-badge">⏳ 60s</span>
+                <span class="timer-badge" id="timer-badge">⏳ 30s</span>
                 <button id="btn-hint" class="btn btn-hint" title="Xem gợi ý">💡 Gợi ý</button>
             </div>
             <div class="image-frame">
