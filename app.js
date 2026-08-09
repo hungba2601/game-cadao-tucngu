@@ -10,7 +10,7 @@ const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyKpyW_p8a
 
 const state = {
     apiKey: '',
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-3.6-flash',
     timeLimit: 30,
     sheetUrl: GOOGLE_SHEET_API_URL,
     fetchedProverbs: [],
@@ -70,7 +70,7 @@ const dom = {
 function init() {
     // Load config from localStorage
     state.apiKey = localStorage.getItem('gemini_api_key') || '';
-    state.model = localStorage.getItem('gemini_model') || 'gemini-3-flash-preview';
+    state.model = localStorage.getItem('gemini_model') || 'gemini-3.6-flash';
     state.timeLimit = parseInt(localStorage.getItem('gemini_time_limit')) || 30;
     
     dom.apiKeyInput.value = state.apiKey;
@@ -139,7 +139,7 @@ function init() {
 // ---- Settings ----
 function saveSettings() {
     const key = dom.apiKeyInput.value.trim();
-    const model = dom.modelInput ? dom.modelInput.value : 'gemini-3-flash-preview';
+    const model = dom.modelInput ? dom.modelInput.value : 'gemini-3.6-flash';
     const time = parseInt(dom.timeLimitInput.value);
 
     if (key) {
